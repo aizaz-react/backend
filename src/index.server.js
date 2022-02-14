@@ -5,6 +5,9 @@ const app=express();
 const mongoose=require('mongoose');
 // routes
   const authRoutes =require('./routes/auth');
+  const adminRoutes =require('./routes/admin/auth');
+
+
 
 
 // enviroment variables
@@ -29,7 +32,7 @@ mongoose.connect(
  //app.use(bodyParser());
  app.use(bodyParser());
   app.use('/api',authRoutes);
-  
+   app.use('/api',adminRoutes );
 
 
 
