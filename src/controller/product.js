@@ -4,7 +4,17 @@ const slugify = require("slugify");
 const catchAsyncErrors = require("../common-middleware/catchAsyncErrors");
 const ErrorHander = require("../common-middleware/errorhander");
 exports.createProduct = (req, res) => {
-  const { name, price, description, brand, category, Stock, createdBy, size, colour } = req.body;
+  const {
+    name,
+    price,
+    description,
+    brand,
+    category,
+    Stock,
+    createdBy,
+    size,
+    colour,
+  } = req.body;
   let productPicture = [];
   // let size = [];
   // let colour = [];
@@ -44,25 +54,34 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
   if (!product) {
-    return res.status(404).json({ success: false, message: "Product not found!" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Product not found!" });
   }
+  let { productPicture } = product;
+
   // let productPicture = [];
-  let new_image = [];
-  if (req.file) {
-    new_image = req.file.filename;
-    try {
-      fs.unlinkSync("./uploads/" + req.body.old_image);
-    } catch (err) {
-      console.log(err);
-    }
-  } else {
-    new_image = req.body.old_image;
-  }
-  console.log(new_image);
-  let { body } = req;
+  // let new_image = [];
+  // if (req.file) {
+  //   new_image = req.file.filename;
+  //   try {
+  //     fs.unlinkSync("./uploads/" + req.body.old_image);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // } else {
+  //   new_image = req.body.old_image;
+  // }
+  // console.log(new_image);
+  let { body, files } = req;
+  let reqFiles = files.map((file) => {
+    return { img: file.location };
+  });
+
+  console.log(...files);
   product = await Product.findOneAndUpdate(req.params.id, {
     ...body,
-    productPicture: new_image,
+    productPicture: [...productPicture, ...reqFiles],
   });
 
   res.status(200).json({
